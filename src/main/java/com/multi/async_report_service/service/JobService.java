@@ -66,16 +66,48 @@ public class JobService {
     private void processJob(Job job) {
 
 
+        int totalRecords = job.getTotalRecords();
+
+        int chunkSize = totalRecords / 4;
+
+
+        for(int i = 0; i < 4; i++) {
+
+
+            int start = (i * chunkSize) + 1;
+
+            int end = (i + 1) * chunkSize;
+
+
+
+            executorService.submit(() -> {
+
+
+                processChunk(start, end);
+
+
+            });
+
+        }
+
+    }
+
+    private void processChunk(int start, int end) {
+
+
         System.out.println(
-                "Processing started by : "
+                "Processing records "
+                        + start
+                        + " to "
+                        + end
+                        + " by "
                         + Thread.currentThread().getName()
         );
 
 
         try {
 
-            Thread.sleep(10000);
-
+            Thread.sleep(5000);
 
         } catch (InterruptedException e) {
 
@@ -85,7 +117,11 @@ public class JobService {
 
 
         System.out.println(
-                "Processing completed by : "
+                "Completed records "
+                        + start
+                        + " to "
+                        + end
+                        + " by "
                         + Thread.currentThread().getName()
         );
 
